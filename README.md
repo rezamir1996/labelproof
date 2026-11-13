@@ -11,6 +11,32 @@ If the gap is empty the label is `COVERED`. If it is not, the contract returns t
 missing allergen codes. If the reading cannot be trusted, the verdict is `UNUSABLE` and
 the gate returns `false`.
 
+## Live on Studio
+
+    contract       0x927488Ac4A2124D713Df57942bD76a29f32b89E4
+    explorer       https://explorer-studio.genlayer.com/address/0x927488Ac4A2124D713Df57942bD76a29f32b89E4
+    deploy tx      0x5aec60d13daab9a4d6caedfe8617a78518987c3772dbae515149d22b88863960
+    site_label     allergen-audit-v1
+
+Two products are registered and audited. Both branches of the decision are live:
+
+| product | label says | conclusion | verdict | gate |
+| --- | --- | --- | --- | --- |
+| `snack-001` | `MILK\|EGG` declared | ingredients `butter,eggwhite`, implying `MILK,EGG` | `COVERED` | `true` |
+| `snack-002` | `MILK` declared | ingredients `wheatflour`, implying `GLUTEN` | `GAP` missing `GLUTEN` | `false` |
+
+On `snack-001` the word "milk" never appears in the text: `MILK` is reached two hops from
+`clarified butter` (`butter -> milk -> MILK`) through the published graph. On `snack-002`
+the label declares `MILK` and its ingredients imply `GLUTEN`, so `missing_of` is `GLUTEN`
+and `extra_of` is `MILK`.
+
+`counts_of` reports `<from code>,<from model>`. `snack-001` is `1,1` and `snack-002` is
+`0,1`: in both cases at least one ingredient is only reachable by the reading step, which
+is why the model is in the loop at all.
+
+Addresses, every transaction hash and the validator votes behind both audits are in
+[`EVIDENCE.md`](EVIDENCE.md).
+
 ## Why this needs an Intelligent Contract
 
 An ingredient list is prose. `clarified butter`, `whey powder` and `casein` are three
